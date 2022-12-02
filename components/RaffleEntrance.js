@@ -13,8 +13,6 @@ export default function LotteryEntrance() {
   const raffleAddress =
     chainId in contractAddresses ? contractAddresses[chainId][0] : null
 
-  // State hooks
-  // https://stackoverflow.com/questions/58252454/react-hooks-using-usestate-vs-just-variables
   const [entranceFee, setEntranceFee] = useState('0')
   const [numberOfPlayers, setNumberOfPlayers] = useState('0')
   const [recentWinner, setRecentWinner] = useState('0')
@@ -38,7 +36,7 @@ export default function LotteryEntrance() {
 
   const { runContractFunction: getEntranceFee } = useWeb3Contract({
     abi: abi,
-    contractAddress: raffleAddress, // specify the networkId
+    contractAddress: raffleAddress,
     functionName: 'getEntranceFee',
     params: {},
   })
@@ -58,12 +56,6 @@ export default function LotteryEntrance() {
   })
 
   async function updateUIValues() {
-    // Another way we could make a contract call:
-    // const options = { abi, contractAddress: raffleAddress }
-    // const fee = await Moralis.executeFunction({
-    //     functionName: "getEntranceFee",
-    //     ...options,
-    // })
     const entranceFeeFromCall = (await getEntranceFee()).toString()
     const numPlayersFromCall = (await getPlayersNumber()).toString()
     const recentWinnerFromCall = await getRecentWinner()
@@ -77,18 +69,6 @@ export default function LotteryEntrance() {
       updateUIValues()
     }
   }, [isWeb3Enabled])
-  // no list means it'll update everytime anything changes or happens
-  // empty list means it'll run once after the initial rendering
-  // and dependencies mean it'll run whenever those things in the list change
-
-  // An example filter for listening for events, we will learn more on this next Front end lesson
-  // const filter = {
-  //     address: raffleAddress,
-  //     topics: [
-  //         // the name of the event, parnetheses containing the data type of each event, no spaces
-  //         utils.id("RaffleEnter(address)"),
-  //     ],
-  // }
 
   const handleNewNotification = () => {
     dispatch({
@@ -100,7 +80,6 @@ export default function LotteryEntrance() {
     })
   }
 
-  // Probably could add some error handling
   const handleSuccess = async (tx) => {
     await tx.wait(1)
     updateUIValues()
@@ -116,8 +95,6 @@ export default function LotteryEntrance() {
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-auto"
             onClick={async () =>
               await enterRaffle({
-                // onComplete:
-                // onError:
                 onSuccess: handleSuccess,
                 onError: (error) => console.log(error),
               })
